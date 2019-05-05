@@ -1,0 +1,11 @@
+.*.swp
+*.ncb
+*.pyc
+*.pyo
+*.suo
+*.user
+*.o
+*.D
+*.d
+*.out
+output.txt
