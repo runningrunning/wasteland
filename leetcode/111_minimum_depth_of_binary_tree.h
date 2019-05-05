@@ -1,0 +1,51 @@
+/* int _max(struct TreeNode* root, int n) */
+/* { */
+/*     if (!root) */
+/*         return n; */
+
+/*     int l = _max(root->left, n + 1); */
+/*     int r = _max(root->right, n + 1); */
+
+/*     return l > r ? l : r; */
+/* } */
+/* int maxDepth(struct TreeNode* root) */
+/* { */
+/*     return _max(root, 0); */
+/* } */
+
+
+/* compare with max length, it's totally different! */
+void _dmin(struct TreeNode* node, int n, int* min)
+{
+    if (!node->left && !node->right)
+    {
+        if ((*min) > n)
+            *min = n;
+        return;
+    }
+
+    if (n >= (*min))
+        return;
+
+    if (node->left)
+        _dmin(node->left, n + 1, min);
+
+    if (node->right)
+        _dmin(node->right, n + 1, min);
+}
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int minDepth(struct TreeNode* root)
+{
+    if (!root) return 0;
+    int min = INT_MAX;
+    _dmin(root, 1, &min);
+    return min;
+}

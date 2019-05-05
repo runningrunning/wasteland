@@ -1,0 +1,7 @@
+// TODO HOW TO USE STANDARDS CPP LIBRARY !!!
+// HOW TO IMPLEMENT MY OWN MAP, HASH ETC.
+// LEE215
+982. Triples with Bitwise AND Equal To Zero
+1004. Max Consecutive Ones III Complicated with more elegant solution
+1014. Best Sightseeing Pair
+1024. Video Stitching
