@@ -366,32 +366,31 @@ void test()
     int** r = gen_aa(m, l, c);
     printf("%d.\n", isEscapePossible(r, l / c, &c, s, 2, t, 2));
 }
+#include "./1040_moving_stones_until_consecutive_II.h"
+void test()
+{
+    // int m[] = {7, 4, 9};
+    // int m[] = {6, 5, 4, 3, 10};
+    // int m[] = {100, 101, 104, 102, 103};
+    int m[] = {8, 7, 6, 5, 10};
+    int l = LEN_M(m);
+    int r = 0;
+    int* ret = numMovesStonesII(m, l, &r);
+    out(ret, r);
+}
+#endif
 
 #include "./1039_minimum_score_triangulation_of_polygon.h"
 void test()
 {
     // int m[] = {1, 2, 3};
     // int m[] = {3, 7, 4, 5};
-    int m[] = {1, 3, 1, 4, 1, 5, 1, 3, 1, 4, 1, 4, 3, 5, 1, 10, 1, 2, 3, 1, 1,3,4 ,14, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10, 4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,};
+    int m[] = {1, 3, 1, 4, 1, 5, 1, 3, 1, 4, 1, 4, 3, 5, 1, 10, 1, 2, 3, 1, 1,3,4 ,14, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10, 4, 1, 4, 3, 5, 1, 10,4, 1, 9, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10,4, 1, 4, 3, 5, 1, 10, 20, 30};
+
     // int m[] = {1, 3, 1, 4, 1, 5};
 
     int l = LEN_M(m);
-    printf("%d .\n", minScoreTriangulation(m, l));
-}
-
-#endif
-
-#include "./1040_moving_stones_until_consecutive_II.h"
-void test()
-{
-    // int m[] = {7, 4, 9};
-    int m[] = {6, 5, 4, 3, 10};
-    // int m[] = {100, 101, 104, 102, 103};
-    // int m[] = {8, 7, 6, 5, 10};
-    int l = LEN_M(m);
-    int r = 0;
-    int* ret = numMovesStonesII(m, l, &r);
-    out(ret, r);
+    printf("%d %d.\n", minScoreTriangulation(m, l), minScoreTriangulation1(m, l));
 }
 
 int main(int argn, char** argv){

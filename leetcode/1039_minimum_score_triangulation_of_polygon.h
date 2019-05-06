@@ -1,8 +1,39 @@
-// reverse dp ???
+// reverse dp !!! is much faster than no reverse one !
 // dp ???? just store the internal value
 // how to define triangulate, how to do so
 // just divide them
 // Find better solution optimize !!!!!
+
+int minScoreTriangulation(int* A, int ASize)
+{
+    if (ASize < 3)
+        return 0;
+
+    if (ASize == 3)
+        return A[0] * A[1] * A[2];
+
+    int** dp = malloc(sizeof(int*) * ASize);
+    for (int i = 0; i < ASize; i ++)
+    {
+        dp[i] = calloc(sizeof(int), ASize);
+    }
+
+    // reverse dp
+    for (int i = 2; i < ASize; i ++)
+        for (int j = 0; j < ASize - i; j ++)
+        {
+            for (int k = j + 1; k < j + i; k ++)
+            {
+                int t = dp[j][k] + dp[k][j + i] + A[j] * A[k] * A[j + i];
+                if (!dp[j][j + i] || dp[j][j + i] > t)
+                    dp[j][j + i] = t;
+
+            }
+        }
+
+    return dp[0][ASize - 1];
+}
+
 int _mst(int* A, int s, int e, int v, int*** dp)
 {
     if (dp[v][s][e])
@@ -34,7 +65,7 @@ int _mst(int* A, int s, int e, int v, int*** dp)
     return min;
 }
 
-int minScoreTriangulation(int* A, int ASize)
+int minScoreTriangulation1(int* A, int ASize)
 {
     if (ASize < 3)
         return 0;
@@ -51,7 +82,6 @@ int minScoreTriangulation(int* A, int ASize)
     }
     return _mst(A, 1, ASize - 1, 0, dp);
 }
-
 /* int _mst(int* A, int s, int e, int v, int** dp) */
 /* { */
 /*     if (v == 0 && dp[s][e]) */
