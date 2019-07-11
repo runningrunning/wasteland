@@ -378,7 +378,6 @@ void test()
     int* ret = numMovesStonesII(m, l, &r);
     out(ret, r);
 }
-#endif
 
 #include "./1039_minimum_score_triangulation_of_polygon.h"
 void test()
@@ -393,6 +392,31 @@ void test()
     printf("%d %d.\n", minScoreTriangulation(m, l), minScoreTriangulation1(m, l));
 }
 
+#include "./1041_robot_bounded_in_circle.h"
+void test()
+{
+    // char* s = "GGLLGG";
+    char* s = "GL";
+    // char* s = "GG";
+    // char* s = "LGR";
+    printf("%d.\n", isRobotBounded(s));
+}
+#endif
+
+#include "./1042_flower_planting_with_no_adjacent.h"
+void test()
+{
+    // int m[] = {1, 2, 2, 3, 3, 1}; int n = 3;
+    // int m[] = {1, 2, 3, 4}; int n = 4;
+    int m[] = {1, 2, 2, 3, 3, 4, 4, 1, 1, 3, 2, 4}; int n = 4;
+    int l = LEN_M(m);
+    int c = 2;
+    int** r = gen_aa(m, l, c);
+
+    int rs = 0;
+    int* ret = gardenNoAdj(n, r, l / c, &c, &rs);
+    out(ret, rs);
+}
 int main(int argn, char** argv){
     // printf("INT_MIN %d, INT_MAX %d.\n", INT_MIN, INT_MAX);
     srand(time(NULL));
