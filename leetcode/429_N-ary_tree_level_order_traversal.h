@@ -30,8 +30,8 @@ class Solution {
     }
 
  public:
-    vector<vector<int>> levelOrder(Node* root) {
-        vector<vector<int>> t;
+    vector<vector<int>> levelOrder(Node* root) { 
+       vector<vector<int>> t;
         if (root)
             _lo(root, t, 0);
         return t;
