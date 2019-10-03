@@ -50,11 +50,49 @@ void test()
                     exit(1);
                 }
 }
-#endif
 
 #include "./1095_find_in_mountain_array.h"
 void test()
 {
+}
+
+
+#include "./1185_day_of_the_week.h"
+void test()
+{
+    printf("%s.\n", dayOfTheWeek(31, 8, 2019));
+    printf("%s.\n", dayOfTheWeek(1, 1, 1971));
+    printf("%s.\n", dayOfTheWeek(18, 7, 1999));
+    printf("%s.\n", dayOfTheWeek(15, 8, 1993));
+}
+
+#include "./1175_prime_arrangements.h"
+void test()
+{
+    printf("%d\n", numPrimeArrangements(3));
+    printf("%d\n", numPrimeArrangements(5));
+    printf("%d\n", numPrimeArrangements(100));
+}
+
+#include "./1154_day_of_the_year.h"
+void test()
+{
+    // char* s = "2019-01-09";
+    // char* s = "2003-03-01";
+    char* s = "2019-02-10";
+    printf("%s is %d.\n", s, dayOfYear(s));
+}
+#endif
+
+#include "./1198_find_smallest_common_element_in_all_rows.h"
+void test()
+{
+    int m[] = {1, 2, 3, 4, 5, 5, 2, 4, 5, 8, 9, 10, 3, 4, 5, 7, 9, 11, 1, 3, 4, 5, 7, 9};
+    int n = LEN_M(m);
+    int c = 6;
+    int** a = gen_aa(m, n, c);
+    outaaa(a, c, n / c);
+    printf("%d.\n", smallestCommonElement(a, n/c, &c));
 }
 
 
