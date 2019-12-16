@@ -171,12 +171,20 @@ void intcode(int* code, int cl, int ml, inputCB input_cb, outputCB output_cb)
         case 3:
             // printf("a[s + 1] %ld, o %d, input %d ", a[s + 1], o, input);
             if (input_cb)
-                assign(p1, a[s + 1], base, memory, input_cb());
+            {
+                int _in = input_cb();
+                printf("input is %d.\n", _in);
+                assign(p1, a[s + 1], base, memory, _in);
+            }
             s += 2;
             break;
         case 4:
             if (output_cb)
-                output_cb(value(p1, a[s + 1], base, memory));
+            {
+                int _out = value(p1, a[s + 1], base, memory);
+                printf("ouput is %d.\n", _out);
+                output_cb(_out);
+            }
             // printf("a[s + 1] %ld, o %d, ouput %ld ", a[s + 1], o, output);
             s += 2;
             // printf("=== output %ld.\n", output);
@@ -238,6 +246,7 @@ void intcode(int* code, int cl, int ml, inputCB input_cb, outputCB output_cb)
     }
 }
 
+#if 0
 typedef struct {
     int goal_type;
     int goal_num;
@@ -801,6 +810,206 @@ void test()
             s = m;
     }
     printf("%d.\n", s);
+}
+#endif
+
+#define AREA_C 512
+#define AREA_R 512
+
+int r;
+int c;
+int** area;
+
+bool has_result;
+int min;
+
+int x;
+int y;
+
+int px;
+int py;
+
+int ox;
+int oy;
+
+int si;
+int* stack;
+
+int min_x;
+int max_x;
+int min_y;
+int max_y;
+
+//
+//
+//       N
+//     W   E
+//       S
+//
+//    Bottom left is, 0, 0, Right +x, Up +y
+
+void output_my(long in)
+{
+    if (x < min_x)
+        min_x = x;
+    if (x > max_x)
+        max_x = x;
+    if (y < min_y)
+        min_y = y;
+    if (y > max_y)
+        max_y = y;
+
+    // printf("x %d y %d output is in %d.\n", x, y, in);
+    if (in == 0)
+    {
+        area[x][y] = 1;
+        x = px;
+        y = py;
+        si --;
+    }
+    else
+    {
+
+        if (!area[x][y] || (area[x][y] >> 16) > si)
+            area[x][y] = (si << 16) | in + 1;
+
+        if (in == 2)
+        {
+            if (si < min)
+                min = si;
+            ox = x;
+            oy = y;
+
+            for (int i = 0; i < AREA_R; i ++)
+                memset(area[i], 0, sizeof(int) * AREA_C);
+            area[x][y] = 1;
+            si = 0;
+            px = x;
+            py = y;
+            has_result = true;
+        }
+    }
+}
+
+bool will(int x, int y, int dx, int dy, int step)
+{
+    /* if (has_result && (step > min)) */
+    /*     return false; */
+
+    int next = area[x + dx][y + dy];
+
+    if (!next)
+        return true;
+
+    if (next == 1)
+        return false;
+
+    if ((next >> 16) <= step)
+        return false;
+
+    return true;
+}
+
+long input_my()
+{
+    printf("x %d y %d input.\n", x, y);
+    if (x == 0 || x == AREA_C - 1 || y == 0 || y == AREA_R - 1)
+        printf("Error, Edge here si %d.\n", si);
+
+    px = x;
+    py = y;
+
+    if (will(x, y, 0, 1, si + 1))
+    {
+        stack[si ++] = 1;
+        y += 1;
+        return 1;
+    }
+    else if (will(x, y, 0, -1, si + 1))
+    {
+        stack[si ++] = 2;
+        y += -1;
+        return 2;
+    }
+    else if (will(x, y, 1, 0, si + 1))
+    {
+        stack[si ++] = 3;
+        x += 1;
+        return 3;
+    }
+    else if (will(x, y, -1, 0, si + 1))
+    {
+        stack[si ++] = 4;
+        x += -1;
+        return 4;
+    }
+    else
+    {
+        int d = stack[-- si];
+        if (si == 0)
+        {
+            printf("result is %d min_x %d min_y %d, max_x %d max_y %d\n", min, min_x, min_y, max_x, max_y);
+            int max = INT_MIN;
+            for (int i = 0; i < AREA_R; i ++)
+                for (int j = 0; j < AREA_C; j ++)
+                {
+                    if (area[i][j] > 1)
+                        if (max < (area[i][j] >> 16))
+                            max = area[i][j] >> 16;
+                }
+
+            printf("step is %d.\n", max);
+            exit(0);
+        }
+        switch(d)
+        {
+        case 1:
+            y += -1;
+            return 2;
+        case 2:
+            y += 1;
+            return 1;
+        case 3:
+            x += -1;
+            return 4;
+        case 4:
+            x += 1;
+            return 3;
+        }
+
+    }
+    printf("error input. si %d \n", si);
+    return 0;
+}
+
+void test()
+{
+#include "input_15"
+
+    r = AREA_R;
+    c = AREA_C;
+    area = malloc(sizeof(int*) * r);
+    for (int i = 0; i < r; i ++)
+        area[i] = calloc(sizeof(int), c);
+
+    has_result = false;
+    min = 65535;
+
+    x = AREA_C / 2;
+    y = AREA_R / 2;
+
+    px = x;
+    py = y;
+
+    si = 0;
+    stack = malloc(sizeof(int) * 20480);
+    int l = LENGTH(m);
+
+    area[x][y] = INT_MAX;
+    min_x = min_y = INT_MAX;
+    max_x = max_y = INT_MIN;
+    intcode(m, l, INTCODE_MEMORY, input_my, output_my);
+
 }
 
 int main(int argn, char** argv)
