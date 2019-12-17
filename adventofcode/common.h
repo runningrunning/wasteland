@@ -650,7 +650,7 @@ void outl(long *num, int size)
 void out(int *num, int size)
 {
     for (int i = 0; i < size; i ++)
-        printf("%4d ", num[i]);
+        printf("%d,", num[i]);
     printf("\n");
 }
 

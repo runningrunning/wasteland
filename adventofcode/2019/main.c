@@ -4,6 +4,7 @@
 // Using other language
 // FIND THE BETTER SOLUTION !
 // PRACTISE MORE
+// Day 16 is fun and tricky !
 
 // be careful here, it MUST be with &0xFFFFFFFF
 // (x & 0xFFFFFFFF) << 32 | (y&0xFFFFFFFF); != x << 32 | y
@@ -173,7 +174,7 @@ void intcode(int* code, int cl, int ml, inputCB input_cb, outputCB output_cb)
             if (input_cb)
             {
                 int _in = input_cb();
-                printf("input is %d.\n", _in);
+                // printf("input is %d.\n", _in);
                 assign(p1, a[s + 1], base, memory, _in);
             }
             s += 2;
@@ -182,7 +183,7 @@ void intcode(int* code, int cl, int ml, inputCB input_cb, outputCB output_cb)
             if (output_cb)
             {
                 int _out = value(p1, a[s + 1], base, memory);
-                printf("ouput is %d.\n", _out);
+                // printf("ouput is %d.\n", _out);
                 output_cb(_out);
             }
             // printf("a[s + 1] %ld, o %d, ouput %ld ", a[s + 1], o, output);
@@ -811,7 +812,6 @@ void test()
     }
     printf("%d.\n", s);
 }
-#endif
 
 #define AREA_C 512
 #define AREA_R 512
@@ -1011,6 +1011,396 @@ void test()
     intcode(m, l, INTCODE_MEMORY, input_my, output_my);
 
 }
+
+void test()
+{
+    int time = 10000;
+
+    int ai = 0;
+    char** as = read_input("input_16", &ai);
+    char* s = as[0];
+    int n = 0;
+
+    while(s[n] >= '0' && s[n] <= '9')
+        n ++;
+
+    int* in = malloc(sizeof(int) * n);
+
+    n = 0;
+
+    while(s[n] >= '0' && s[n] <= '9')
+    {
+        in[n] = s[n] - '0';
+        n ++;
+    }
+
+    int offset = 0;
+
+    for (int i = 0; i < 7; i ++)
+        offset = offset * 10 + in[i];
+
+    int left = n * time - offset;
+
+    int* last = malloc(sizeof(int) * left);
+
+    int st = offset % n;
+
+    for (int i = 0; i < left; i ++)
+        last[i] = in[(st ++) % n];
+
+    int* tmp = malloc(sizeof(int) * left);
+
+    int* cur = last;
+    int* nxt = tmp;
+
+    int t = 0;
+
+    while (t < 100)
+    {
+        memset(nxt, 0, sizeof(int) * left);
+
+        int x = 0;
+        for (int i = left - 1; i >= 0; i --)
+        {
+            x += cur[i];
+            nxt[i] = x % 10;
+        }
+
+        cur = cur == last ? tmp : last;
+        nxt = nxt == last ? tmp : last;
+
+        t ++;
+    }
+
+    out(cur, left);
+
+    // for (int i = 1; i < time; i ++)
+    // {
+    //     for (int j = 0; j < n; j ++)
+    //         in[i * n + j] = in[j];
+    // }
+
+    // int* ou = malloc(sizeof(int) * n * time);
+
+    // int p[] = {0, 1, 0, -1};
+
+    // int t = 0;
+    // int o = 1;
+    // int pn = 1;
+    // int pi = 0;
+
+    // int* cur = in;
+    // int* nxt = ou;
+
+    // // out(cur, n * time);
+
+    // while (t < 100)
+    // {
+    //     int st = 0;
+
+    //     for (int i = 0; i < n * time; i ++)
+    //     {
+    //         int x = 0;
+    //         int y = 0;
+    //         int d = (n * time - st) / o;
+    //         int z = st;
+    //         int pi = 0;
+
+    //         for (int j = 0; j < d; j ++)
+    //         {
+    //             y = (++ pi) % 4;
+
+    //             int r = o;
+
+    //             // printf("z %d, o %d y %d.\n", z, o, y);
+
+    //             if (y == 0 || y == 2)
+    //             {
+    //                 z += o;
+    //                 continue;
+    //             }
+
+    //             if (y == 1)
+    //                 while(r --)
+    //                     x += cur[z ++];
+    //             else
+    //                 while (r --)
+    //                     x -= cur[z ++];
+    //         }
+
+    //         y = (++ pi) % 4;
+    //         // printf("z is %d %d %d\n", z, y, x);
+    //         if (y == 1)
+    //             while (z < n * time)
+    //                 x += cur[z ++];
+    //         else if (y == 3)
+    //             while(z < n * time)
+    //                 x -= cur[z ++];
+
+    //         // for (int j = st; j < n * time; j ++)
+    //         // {
+    //         //     x += p[pi % 4] * cur[j];
+    //         //     if (!((pn ++) % o))
+    //         //         pi ++;
+    //         // }
+
+    //         nxt[i] = abs(x) % 10;
+
+    //         st ++;
+    //         o ++;
+    //     }
+
+    //     // out(nxt, n * time);
+    //     // getchar();
+
+    //     cur = cur == in ? ou : in;
+    //     nxt = nxt == in ? ou : in;
+
+    //     t ++;
+    //     o = 1;
+    //     printf("t %d.\n", t);
+    // }
+    // out(cur, n * time);
+}
+
+// top left is 0, 0, right is +x, down is +y
+int r = 0;
+int c = 0;
+int x = 0;
+int y = 0;
+int f = 0;
+
+int cx = 0;
+int cy = 0;
+int** area;
+int nums = 0;
+
+// R,4,R,10,R,8,R,4
+// R,10,R,6,R,4
+// R,4,R,10,R,8,R,4
+// R,10,R,6,R,4
+// R,4,L,12,R,6,L,12
+// R,10,R,6,R,4
+// R,4,L,12,R,6,L,12
+// R,4,R,10,R,8,R,4
+// R,10,R,6,R,4
+// R,4,L,12,R,6,L,12
+
+int in = 5;
+int in_i = 0;
+int in_o = 0;
+
+char* inputs[] =
+{
+ "A,B,A,B,C,B,C,A,B,C\n",
+ "R,4,R,10,R,8,R,4\n",
+ "R,10,R,6,R,4\n",
+ "R,4,L,12,R,6,L,12\n",
+ "n\n",
+};
+
+long input_my()
+{
+    if (in_i >= in)
+        printf("error here.\n");
+    if (inputs[in_i][in_o])
+        return inputs[in_i][in_o ++];
+    in_i ++;
+    in_o = 0;
+    return input_my();
+}
+
+void output_my(long out)
+{
+    if (out == '\n')
+    {
+        if (c < cx)
+            c = cx;
+        cy += 1;
+        cx = 0;
+    }
+    else
+    {
+        if (out != '.' && out != '#')
+        {
+            x = cx;
+            y = cy;
+            f = out;
+        }
+
+        if (out == '#')
+            nums ++;
+
+        area[cy][cx ++] = (int) out;
+    }
+    r = cy;
+
+    if (out > 256)
+        printf("%d.\n", out);
+}
+
+int can(int x, int y, int f, int* v)
+{
+    int dx = 0;
+    int dy = 0;
+
+    if (f == '^')
+        dy = -1;
+    else if (f == '>')
+        dx = 1;
+    else if (f == 'v')
+        dy = 1;
+    else if (f == '<')
+        dx = -1;
+
+    int n = 0;
+
+    x += dx;
+    y += dy;
+
+    int new = 0;
+
+    // the first one can not be visited
+    if (x >= 0 && x < c && y >= 0 && y < r && area[y][x] == '-')
+        return 0;
+
+    while (x >= 0 && x < c && y >= 0 && y < r && (area[y][x] == '#' || area[y][x] == '-'))
+    {
+        if (area[y][x] == '#')
+            new ++;
+        x += dx;
+        y += dy;
+        n ++;
+    }
+
+    *v = new;
+    return n;
+}
+
+void do_visit(int x, int y, int f, int num)
+{
+    int dx = 0;
+    int dy = 0;
+
+    if (f == '^')
+        dy = -1;
+    else if (f == '>')
+        dx = 1;
+    else if (f == 'v')
+        dy = 1;
+    else if (f == '<')
+        dx = -1;
+
+    area[y][x] = '-';
+
+    for (int i = 0; i < num; i ++)
+    {
+        x += dx;
+        y += dy;
+        area[y][x] = '-';
+    }
+
+    area[y][x] = f;
+}
+
+void paint_area()
+{
+    for (int i = 0; i < r; i ++)
+    {
+        for (int j = 0; j < c; j ++)
+            printf("%c", area[i][j]);
+        printf("\n");
+    }
+}
+
+void test()
+{
+    #include "input_17"
+    int l = LENGTH(m);
+    int ml = INTCODE_MEMORY;
+
+    area = malloc(sizeof(int*) * 256);
+    for (int i = 0; i < 256; i ++)
+        area[i] = malloc(sizeof(int) * 64);
+
+    intcode(m, l, ml, input_my, output_my);
+
+    // paint_area();
+
+    // int si = 3;
+    // int steps[512];
+    // steps[0] = steps[1] = steps[2] = 0;
+
+    // int visits = 0;
+    // while (visits < nums)
+    // {
+    //     int v = 0;
+    //     int n = 0;
+
+    //     for (int i = 0; i < 4; i ++)
+    //     {
+    //         if (n = can(x, y, f, &v))
+    //         {
+    //             if (steps[si - 1] == (0 - 'R') && steps[si - 2] == (0 - 'R') && steps[si - 3] == (0 - 'R'))
+    //             {
+    //                 si -= 3;
+    //                 steps[si ++] = 0 - 'L';
+    //             }
+
+    //             int tx = x;
+    //             int ty = y;
+
+    //             printf("f %c x %d y %d n %d\n", f, x, y, n);
+
+    //             do_visit(tx, ty, f, n);
+
+    //             steps[si ++] = n;
+
+    //             if (f == '^')
+    //                 y -= n;
+    //             else if (f == '>')
+    //                 x += n;
+    //             else if (f == 'v')
+    //                 y += n;
+    //             else if (f == '<')
+    //                 x -= n;
+    //             else
+    //                 printf("f is error %c.\n", f);
+    //             visits += v;
+    //             break;
+    //         }
+    //         else
+    //         {
+    //             steps[si ++] = 0 - 'R';
+    //             if (f == '^')
+    //                 f = '>';
+    //             else if (f == '>')
+    //                 f = 'v';
+    //             else if (f == 'v')
+    //                 f = '<';
+    //             else if (f == '<')
+    //                 f = '^';
+    //             else
+    //                 printf("f is error %c.\n", f);
+    //             // printf("f is %c.\n", f);
+    //         }
+    //     }
+
+    //     paint_area();
+    //     // getchar();
+    // }
+
+    // for (int i = 3; i < si; i ++)
+    // {
+    //     if (steps[i] < 0)
+    //         printf("%c,", abs(steps[i]));
+    //     else
+    //         printf("%d,", steps[i]);
+    // }
+
+    // printf("%d.\n", si - 3);
+}
+#endif
 
 int main(int argn, char** argv)
 {
