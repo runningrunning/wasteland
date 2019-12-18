@@ -54,6 +54,16 @@ char** read_input(char* file, int* s)
     return a;
 }
 
+void paint_area(int** a, int r, int c)
+{
+    for (int i = 0; i < r; i ++)
+    {
+        for (int j = 0; j < c; j ++)
+            printf("%c", a[i][j]);
+        printf("\n");
+    }
+}
+
 long value(int mode, long value, long base, long* memory)
 {
     if (mode == 0)
@@ -1368,7 +1378,7 @@ void test()
     //                 printf("f is error %c.\n", f);
     //             visits += v;
     //             break;
-    //         }
+    //         }`
     //         else
     //         {
     //             steps[si ++] = 0 - 'R';
@@ -1401,6 +1411,254 @@ void test()
     // printf("%d.\n", si - 3);
 }
 #endif
+
+// void cal(char** a, int** f, int r, int c, char n, long** ds, int* st, int* nx)
+// {
+//     int di = n == '@' ? 0 : (n - 'a' + 1);
+//     int need = n == '@' ? 'a' : (n + 1);
+
+//     int x = 0;
+//     int y = 0;
+
+//     // clear visited path
+//     for (int i = 0; i < r; i ++)
+//     {
+//         for (int j = 0; j < c; j ++)
+//         {
+//             if (a[i][j] == n)
+//             {
+//                 x = i;
+//                 y = j;
+//             }
+//         }
+//         memset(f[i], 0, sizeof(int) * c);
+//     }
+
+//     int si = 0;
+//     int ni = 0;
+//     int step = 1;
+//     f[x][y] = step;
+
+//     st[si ++] = x << 16 | y;
+
+//     while (si)
+//     {
+//         for (int i = 0; i < si; i ++)
+//         {
+//             int x = st[i] >> 16;
+//             int y = st[i] & 0xFFFF;
+
+//             if (can(a, f, r, c, x - 1, y, step))
+//                 nx[ni ++] = (x - 1) << 16 | y;
+
+//             if (can(a, f, r, c, x + 1, y, step))
+//                 nx[ni ++] = (x + 1) << 16 | y;
+
+//             if (can(a, f, r, c, x, y - 1, step))
+//                 nx[ni ++] = x << 16 | y - 1;
+
+//             if (can(a, f, r, c, x, y + 1, step))
+//                 nx[ni ++] = x << 16 | y + 1;
+//         }
+//     }
+// }
+
+bool key(char** a, int x, int y, int k)
+{
+    int n = a[x][y];
+    if (n >= 'a' && n <= 'z')
+    {
+        int d = 1 << (n - 'a');
+        return !(k & d);
+    }
+    return false;
+}
+
+bool can(char** a, int** f, int r, int c, int x, int y, int k)
+{
+    if (x < 0 || x >= r || y < 0 || y >= c || f[x][y])
+        return false;
+
+    int n = a[x][y];
+
+    if (n == '#')
+        return false;
+
+    if (n >= 'A' && n <= 'Z')
+    {
+        int d = 1 << (n - 'A');
+        return k & d;
+    }
+    return true;
+}
+
+int* caches;
+
+void fun(char** a, int** f, int r, int c, int k, int x, int y, int n, int s, int* m, int* st, int* nx, int nk)
+{
+    if (s > *m)
+        return;
+
+    if (a[x][y] != '@')
+        k |= 1 << (a[x][y] - 'a');
+
+    int _ci = (a[x][y] == '@' ? 0 : (a[x][y]- 'a' + 1)) * 67108864 + k;
+
+    if (caches[_ci] && s > (caches[_ci] - 1))
+    {
+        // printf("nk is %d.\n", nk);
+        return;
+    }
+
+    caches[_ci] = s + 1;
+
+    if (k == n)
+    {
+        if (s < *m)
+        {
+            printf("k %c s %d m %d cache %d.\n", a[x][y], s, *m, caches[_ci]);
+            *m = s;
+        }
+        return;
+    }
+
+    // clear flag
+    for (int i = 0; i < r; i ++)
+        memset(f[i], 0, sizeof(int) * c);
+
+    int ki = 0;
+    long ks[26] = {0};
+
+    // find how many keys we can get with steps
+
+    int si = 0;
+    int ni = 0;
+    int step = 1;
+    f[x][y] = INT_MAX;
+
+    int* stack = st;
+    int* next = nx;
+
+    stack[si ++] = x << 16 | y;
+
+    while (si)
+    {
+        for (int i = 0; i < si; i ++)
+        {
+            int x = stack[i] >> 16;
+            int y = stack[i] & 0xFFFF;
+
+            if (key(a, x, y, k))
+                ks[ki ++] = ((long) f[x][y]) << 32 | stack[i];
+
+            if (can(a, f, r, c, x - 1, y, k))
+            {
+                f[x - 1][y] = step;
+                next[ni ++] = (x - 1) << 16 | y;
+            }
+
+            if (can(a, f, r, c, x + 1, y, k))
+            {
+                f[x + 1][y] = step;
+                next[ni ++] = (x + 1) << 16 | y;
+            }
+
+            if (can(a, f, r, c, x, y - 1, k))
+            {
+                f[x][y - 1] = step;
+                next[ni ++] = x << 16 | y - 1;
+            }
+
+            if (can(a, f, r, c, x, y + 1, k))
+            {
+                f[x][y + 1] = step;
+                next[ni ++] = x << 16 | y + 1;
+            }
+        }
+
+        step ++;
+        si = ni;
+        ni = 0;
+
+        stack = stack == st ? nx : st;
+        next = next == st ? nx : st;
+    }
+
+    for (int i = 0; i < ki; i ++)
+    {
+        long will = ks[i];
+        int _s = will >> 32;
+        int _x = (will >> 16) & 0xFFFF;
+        int _y = will & 0xFFFF;
+        // printf("Got key %d k %d Found key %c .\n", nk, k, a[_x][_y]);
+    }
+
+    // apply each key
+    for (int i = 0; i < ki; i ++)
+    {
+        long will = ks[i];
+        int _s = will >> 32;
+        int _x = (will >> 16) & 0xFFFF;
+        int _y = will & 0xFFFF;
+        fun(a, f, r, c, k, _x, _y, n, s + _s, m, st, nx, nk + 1);
+    }
+}
+
+void test()
+{
+    int ai = 0;
+    char** as = read_input("input_18", &ai);
+    int r = ai;
+    int c = strlen(as[0]);
+
+    if (as[0][c - 1] == '\n')
+        c = c - 1;
+
+    // long** ds = malloc(sizeof(long*) * 27);
+    // for (int i = 0; i < 26; i ++)
+    //     ds[i] = calloc(sizeof(long), 27);
+
+    caches = calloc(sizeof(int), 1811939328);
+
+    int** area = malloc(sizeof(int*) * r);
+
+    int x;
+    int y;
+
+    int need = 0;
+
+    for (int i = 0; i < r; i ++)
+    {
+        area[i] = calloc(sizeof(int), c);
+        for (int j = 0; j < c; j ++)
+        {
+            int a = as[i][j];
+
+            if (a >= 'a' && a <= 'z')
+                need |= 1 << (a - 'a');
+            if (a == '@')
+            {
+                x = i;
+                y = j;
+            }
+        }
+    }
+
+    int* st = malloc(sizeof(int) * r * c);
+    int* nx = malloc(sizeof(int) * r * c);
+
+    // // include @
+    // for (int i = 0; i <= n; i ++)
+    // {
+    //     char need = i ? (i - 1 + 'a') : '@';
+    // }
+
+    int min = INT_MAX;
+    int key = 0;
+
+    fun(as, area, r, c, key, x, y, need, 0, &min, st, nx, 0);
+    printf("min is %d.\n", min);
+}
 
 int main(int argn, char** argv)
 {
