@@ -5,6 +5,7 @@
 // FIND THE BETTER SOLUTION !
 // PRACTISE MORE
 // Day 16 is fun and tricky !
+// Day 17 find better way !
 
 // be careful here, it MUST be with &0xFFFFFFFF
 // (x & 0xFFFFFFFF) << 32 | (y&0xFFFFFFFF); != x << 32 | y
@@ -1378,7 +1379,7 @@ void test()
     //                 printf("f is error %c.\n", f);
     //             visits += v;
     //             break;
-    //         }`
+    //         }
     //         else
     //         {
     //             steps[si ++] = 0 - 'R';
@@ -1410,7 +1411,6 @@ void test()
 
     // printf("%d.\n", si - 3);
 }
-#endif
 
 // void cal(char** a, int** f, int r, int c, char n, long** ds, int* st, int* nx)
 // {
@@ -1658,6 +1658,143 @@ void test()
 
     fun(as, area, r, c, key, x, y, need, 0, &min, st, nx, 0);
     printf("min is %d.\n", min);
+}
+
+int max_x = 300;
+int max_y = 300;
+
+int pi = 0;
+int cx = 0;
+int cy = 0;
+
+int num = 0;
+long last = 0;
+
+long input_my()
+{
+    return ((pi ++) % 2) ? cy : cx;
+}
+
+void output_my(long out)
+{
+    if (out)
+        num ++;
+    last = out;
+}
+void test()
+{
+    #include "input_19"
+    int l = LENGTH(m);
+    int ml = INTCODE_MEMORY;
+    int pnum = 0;
+
+    // for (int i = 0; i < max_y; i ++)
+    // {
+    //     for (int j = 0; j < max_x; j ++)
+    //     {
+    //         cx = j;
+    //         cy = i;
+    //         intcode(m, l, ml, input_my, output_my);
+    //         printf("%c", last ? '#' : '.');
+    //     }
+    //     printf("\n");
+    // }
+
+    // test
+
+    int ty = 160;
+    int dx_min = 0, dx_max = 0;
+    for (int j = 0; j < max_x; j ++)
+    {
+        cx = j;
+        cy = ty;
+        intcode(m, l, ml, input_my, output_my);
+        if (last)
+        {
+            if (!dx_min)
+                dx_min = j;
+            dx_max =  j;
+        }
+    }
+
+    printf("%d %d %d.\n", ty, dx_min, dx_max);
+
+    int mx;
+    int my = ty;
+    int my_max = INT_MIN;
+
+    for (int i = dx_min; i <= dx_max;  i ++)
+    {
+        int j = ty;
+        while (true)
+        {
+            cx = i;
+            cy = j;
+            intcode(m, l, ml, input_my, output_my);
+            if (!last)
+            {
+                if (j - ty >= dx_max - i + 1)
+                {
+                    if (dx_max - i + 1 > my_max)
+                    {
+                        mx = i;
+                        my_max = dx_max - i + 1;
+                        my = j - 1;
+                    }
+                }
+                break;
+            }
+            j ++;
+        }
+    }
+
+    int nx = mx * (100.0 / my_max);
+    int ny = my * (100.0 / my_max);
+    // printf("mx %d my %d my_max %d %d %d.\n", mx, my, my_max, nx, ny);
+
+    for (int i = ny - 100; i < ny + 100; i ++)
+        for (int j = nx - 100; j < nx + 100; j ++)
+        {
+            cx = j;
+            cy = i;
+            intcode(m, l, ml, input_my, output_my);
+            if (!last)
+                continue;
+
+            cx = j + 99;
+            intcode(m, l, ml, input_my, output_my);
+            if (!last)
+                continue;
+
+            cx = j + 100;
+            intcode(m, l, ml, input_my, output_my);
+            if (last)
+                continue;
+
+            cx = j;
+
+            cy = i + 99;
+            intcode(m, l, ml, input_my, output_my);
+            if (!last)
+                continue;
+
+            cy = i + 100;
+            intcode(m, l, ml, input_my, output_my);
+            if (last)
+                continue;
+
+            printf("x %d y %d.\n", j, i);
+            exit(0);
+        }
+}
+#endif
+
+void test()
+{
+    int ai = 0;
+    char** as = read_input("input_18", &ai);
+    int r = ai;
+    int c = strlen(as[0]);
 }
 
 int main(int argn, char** argv)
