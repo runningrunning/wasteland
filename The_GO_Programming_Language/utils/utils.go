@@ -1,9 +1,9 @@
-/* -*- Mode: go; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 package utils
 
 import (
 	"fmt"
 	"log"
+	"net"
 	"reflect"
 	"strconv"
 	"strings"
@@ -43,11 +43,11 @@ func SetReflectValue(t reflect.Type, v reflect.Value, s string) error {
 
 	base := 10
 
-    // the true base is implied by the string's prefix
-    // only support 0x and 0X here
-    if strings.HasPrefix(s, "0x")  || strings.HasPrefix(s, "0X") {
-        base = 0
-    }
+	// the true base is implied by the string's prefix
+	// only support 0x and 0X here
+	if strings.HasPrefix(s, "0x") || strings.HasPrefix(s, "0X") {
+		base = 0
+	}
 
 	switch t.Kind() {
 	case reflect.Bool:
@@ -147,8 +147,8 @@ func SetStruct(vs map[string]string, x interface{}) error {
 		}
 
 		if err := SetReflectValue(evx.Type(), evx, v); err != nil {
-            log.Printf("Failed to Set %s in struct %v due to %v.\n", k, tx, err)
-        }
+			log.Printf("Failed to Set %s in struct %v due to %v.\n", k, tx, err)
+		}
 	}
 
 	if reflect.PtrTo(tx).Implements(reflect.TypeOf((*SetComplete)(nil)).Elem()) {
@@ -182,4 +182,23 @@ func DumpStruct(x interface{}) string {
 		dump = append(dump, fmt.Sprintf("%s: %v", ttx.Name, vvx))
 	}
 	return strings.Join(append(dump, "}"), " ")
+}
+
+func OutboundIP() net.IP {
+	var localAddr *net.UDPAddr
+	// gfw
+	for _, host := range []string{"8.8.8.8:80", "114.114.114.114:80"} {
+		conn, err := net.Dial("udp", host)
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			// .(Type) Type Assertions
+			localAddr = conn.LocalAddr().(*net.UDPAddr)
+		}
+		conn.Close()
+		if localAddr != nil && !localAddr.IP.IsUnspecified() {
+			return localAddr.IP
+		}
+	}
+	return nil
 }

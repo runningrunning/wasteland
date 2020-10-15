@@ -1,4 +1,3 @@
-/* -*- Mode: go; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 package converter
 
 import (
@@ -214,13 +213,13 @@ var abbr = map[string]string{
 }
 
 func Convert(from, to, value string) {
-    if val, ok := abbr[from]; ok {
-        from = val
-    }
+	if val, ok := abbr[from]; ok {
+		from = val
+	}
 
-    if val, ok := abbr[to]; ok {
-        to = val
-    }
+	if val, ok := abbr[to]; ok {
+		to = val
+	}
 
 	f := ToFormat(from, value)
 
@@ -236,19 +235,19 @@ func Convert(from, to, value string) {
 
 	if r == nil {
 		fmt.Fprintf(os.Stderr, "Can not convert from %s %s to %s.\n", from, value, to)
-        return
+		return
 	}
 
 	fmt.Fprintf(os.Stdout, "Convert %s to %s.\n", f, r)
 }
 
 func Enumerate(value string) {
-    for _, f := range abbr {
-        for _, t := range abbr {
-            v := ToFormat(f, value)
-            if r := v.Convert(t); r != nil {
-                fmt.Fprintf(os.Stdout, "Convert %s to %s.\n", v, r)
-            }
-        }
-    }
+	for _, f := range abbr {
+		for _, t := range abbr {
+			v := ToFormat(f, value)
+			if r := v.Convert(t); r != nil {
+				fmt.Fprintf(os.Stdout, "Convert %s to %s.\n", v, r)
+			}
+		}
+	}
 }

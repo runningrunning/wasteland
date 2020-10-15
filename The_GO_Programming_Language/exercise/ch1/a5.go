@@ -1,9 +1,8 @@
-/* -*- Mode: go; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 package main
 
 import (
 	"os"
-    "tgpl/lissajous"
+	"tgpl/lissajous"
 )
 
 func main() {

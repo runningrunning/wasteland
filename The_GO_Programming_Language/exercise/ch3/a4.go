@@ -1,8 +1,7 @@
-/* -*- Mode: go; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 package main
 
 import (
-    "fmt"
+	"fmt"
 	"math"
 	"net/http"
 	"tgpl/server"
@@ -21,8 +20,8 @@ func calz_2(x, y float64) float64 {
 }
 
 // egg box ?
-func calz_3(x, y float64) float64{
-    return - math.Sqrt(15 * 15 - x * x - y * y) / 15
+func calz_3(x, y float64) float64 {
+	return -math.Sqrt(15*15-x*x-y*y) / 15
 }
 
 func handlerSVG(w http.ResponseWriter, r *http.Request) {

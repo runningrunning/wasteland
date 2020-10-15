@@ -1,4 +1,3 @@
-/* -*- Mode: go; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 package main
 
 import (
@@ -21,7 +20,7 @@ func init() {
 }
 
 func main() {
-	server.Server("192.168.1.155", 8000, handlers)
+	server.Server(handlers)
 }
 
 var mu sync.Mutex

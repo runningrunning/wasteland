@@ -1,10 +1,10 @@
-/* -*- Mode: go; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 package server
 
 import (
 	"fmt"
 	"log"
 	"net/http"
+	"tgpl/config"
 	"tgpl/utils"
 )
 
@@ -27,8 +27,11 @@ func ParseForm(r *http.Request, x interface{}) error {
 	return nil
 }
 
-func Server(host string, port int, handlers map[string]Handler) {
-	address := string(fmt.Sprintf("%s:%d", host, port))
+func Server(handlers map[string]Handler) {
+	host := utils.OutboundIP()
+	port := config.Port
+
+	address := string(fmt.Sprintf("%v:%d", host, port))
 
 	for h, f := range handlers {
 		http.HandleFunc(h, f)

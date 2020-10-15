@@ -1,11 +1,10 @@
-/* -*- Mode: go; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 package surface
 
 import (
 	"fmt"
 	"io"
 	"math"
-    "tgpl/utils"
+	"tgpl/utils"
 )
 
 type CalcZ func(float64, float64) float64
