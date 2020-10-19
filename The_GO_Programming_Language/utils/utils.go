@@ -179,7 +179,13 @@ func DumpStruct(x interface{}) string {
 	for i := 0; i < tx.NumField(); i++ {
 		ttx := tx.Field(i)
 		vvx := vx.Field(i)
-		dump = append(dump, fmt.Sprintf("%s: %v", ttx.Name, vvx))
+		if vvx.Type().Kind() == reflect.Interface {
+			dump = append(dump, fmt.Sprintf("%s: %v", ttx.Name, vvx.Elem()))
+		} else 	if vvx.Type().Kind() == reflect.Ptr {
+			dump = append(dump, fmt.Sprintf("%s: %v", ttx.Name, vvx.Elem()))
+		} else {
+			dump = append(dump, fmt.Sprintf("%s: %v", ttx.Name,  vvx))
+		}
 	}
 	return strings.Join(append(dump, "}"), " ")
 }

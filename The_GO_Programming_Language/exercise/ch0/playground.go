@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/big"
+	"math/cmplx"
 	"reflect"
 	"strconv"
 	"strings"
@@ -130,25 +132,6 @@ func tryReflect() {
 	fmt.Printf("%s Title %s.\n", "TITLE", strings.Title("TITLE"))
 }
 
-func tryTypeAssertion() {
-	s := test{Sv: "test"}
-
-	// Interface Type Assertions
-	var ptr TestPtrInterface
-	ptr = &s
-	ptro := ptr.(TestPtrOtherInterface)
-	pt := ptr.(TestInterface)
-	fmt.Printf("&s is %v %v %v %v %v\n", &s, s, ptr, ptro, pt)
-
-	// Concert Type Assertions
-	var x interface{}
-	x = s
-	it := x.(test)
-	ipt := ptr.(*test)
-	fmt.Printf("&s is %v it %v ipt %v\n", &s, it, ipt)
-
-}
-
 func tryStrconv() {
 	s := "0xddd"
 	i, _ := strconv.ParseInt(s, 16, 0)
@@ -209,15 +192,87 @@ func tryFuncReturn() {
 	}()
 
 	fmt.Printf("%v %v.\n", x, y)
+	fmt.Printf("%v %v.\n", x_, y_)
+}
+
+func tryTypeAssertion() {
+	s := test{Sv: "test"}
+
+	// Interface Type Assertions
+	var ptr TestPtrInterface
+	ptr = &s
+	ptro := ptr.(TestPtrOtherInterface)
+	pt := ptr.(TestInterface)
+	fmt.Printf("&s is %v %v %v %v %v\n", &s, s, ptr, ptro, pt)
+
+	// Concert Type Assertions
+	var x interface{}
+	x = s
+	it := x.(test)
+	ipt := ptr.(*test)
+	fmt.Printf("&s is %v it %v ipt %v\n", &s, it, ipt)
+
+}
+
+type TestType struct {
+	x, y int
+}
+
+func tryTypeSwitch() {
+	checkType := func(x interface{}) {
+		switch x := x.(type) {
+		case string:
+			fmt.Printf("it's string %v.\n", x)
+		case int:
+			fmt.Printf("it's int %v.\n", x)
+		case int64:
+			fmt.Printf("it's int6 %v.\n", x)
+		case complex128:
+			fmt.Printf("it's complex128 %v.\n", x)
+		case float64:
+			fmt.Printf("it's float64 %v.\n", x)
+		case TestType:
+			fmt.Printf("it's TestType %v.\n", x)
+		case *TestType:
+			fmt.Printf("it's TestType %v.\n", x)
+		}
+	}
+
+	checkType("abc")
+	checkType(1)
+	checkType(int64(1))
+	checkType(complex128(1 + 10i))
+	checkType(complex128(1+10i) / complex128(2i))
+	checkType(complex128(1+10i) / complex128(1+2i))
+	checkType(3.1415926)
+	checkType(TestType{1, 2})
+	checkType(&TestType{1, 2})
+	checkType(cmplx.Abs(1 + 2i))
+}
+
+// Can not defined new methods on non-local type complex128
+// func (c complex128) Real() float64 {
+// 	return real(c)
+// }
+
+// func tryTypeFunction() {
+// 	a := 1 + 5i
+// 	fmt.Printf("a is %v real is %v.\n", a, a.Real())
+// }
+
+func tryBigRat() {
+	fmt.Printf("%v, %v.\n", new(big.Rat).SetFloat64(3))
 }
 
 func main() {
 	tryRune()
 	tryNumber()
 	tryReflect()
-	tryTypeAssertion()
 	tryStrconv()
 	tryUtils()
 	tryArray()
 	tryFuncReturn()
+	tryTypeAssertion()
+	tryTypeSwitch()
+	tryBigRat()
 }
