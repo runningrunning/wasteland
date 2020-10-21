@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"tgpl/utils"
+	"unicode/utf8"
 )
 
 type test struct {
@@ -264,6 +265,60 @@ func tryBigRat() {
 	fmt.Printf("%v, %v.\n", new(big.Rat).SetFloat64(3))
 }
 
+func tryUint8() {
+	var test uint8 = 10
+	fmt.Printf("%v %v.\n", test, test-255)
+}
+
+func tryPointer() {
+	// cannont take the address of "abc"
+	// s := &"abc"
+	s := "abc"
+	t := &s
+	*t = "bcd"
+
+	fmt.Printf("%v %v %v.\n", s, t, *t)
+}
+
+func tryString() {
+	s := `abc
+xyz`
+	n := "abc\nxyz"
+	fmt.Printf("%v %d %v %d %v.\n", s, len(s), n, len(n), s == n)
+
+	for i := 0; i < len(s); i++ {
+		if s[i] != n[i] {
+			fmt.Printf("it's %d and %v %v.\n", i, s[i], n[i])
+		}
+	}
+
+	s1 := "世界"
+	s2 := "\xe4\xb8\x96\xe7\x95\x8c"
+	s3 := "\u4e16\u754c"
+	s4 := "\U00004e16\U0000754c"
+
+	fmt.Printf("len %d %d %d %d.\n", len(s1), len(s2), len(s3), len(s4))
+	fmt.Printf("runelen %d %d %d %d.\n", utf8.RuneCountInString(s1), utf8.RuneCountInString(s2), utf8.RuneCountInString(s3), utf8.RuneCountInString(s4))
+	fmt.Printf("value %v %v %v %v.\n", (s1), (s2), (s3), (s4))
+
+	for i := 0; i < len(s1); i++ {
+		fmt.Printf("%v %[1]X %[1]b\n", s1[i])
+	}
+
+	for _, c := range s1 {
+		fmt.Printf("%v %[1]c %[1]q \n", c)
+	}
+
+	fmt.Printf("%c %[1]q\n", '\uFFFD')
+
+	fmt.Printf("%x \n", []rune(s1))
+	fmt.Printf("%d \n", []rune(s4))
+	fmt.Printf("%x \n", []byte(s4))
+	fmt.Printf("%d \n", []byte(s4))
+	fmt.Printf("%x \n", s1)
+	fmt.Printf("%d \n", s4)
+}
+
 func main() {
 	tryRune()
 	tryNumber()
@@ -275,4 +330,7 @@ func main() {
 	tryTypeAssertion()
 	tryTypeSwitch()
 	tryBigRat()
+	tryUint8()
+	tryPointer()
+	tryString()
 }
