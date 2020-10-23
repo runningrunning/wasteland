@@ -319,6 +319,35 @@ xyz`
 	fmt.Printf("%d \n", s4)
 }
 
+func tryIota() {
+	type Weekday int
+	const (
+		Sunday Weekday = iota
+		Monday
+	)
+
+	const (
+		_ = 1 << (10 * iota)
+		KiB
+		MiB
+		GiB
+		TiB
+		PiB
+		EiB
+		ZiB
+		YiB
+	)
+
+	// fmt.Printf("%v %v\n", KiB, YiB) // constant 1208925819614629174706176 overflows int
+	fmt.Println(YiB/ZiB)
+	fmt.Printf("%d %d\n", Monday, Sunday)
+
+	var x float32 = math.Pi
+	var y float64 = math.Pi
+
+	fmt.Printf("%g %g\n", x, y)
+}
+
 func main() {
 	tryRune()
 	tryNumber()
@@ -333,4 +362,5 @@ func main() {
 	tryUint8()
 	tryPointer()
 	tryString()
+	tryIota()
 }
