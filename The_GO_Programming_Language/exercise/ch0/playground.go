@@ -339,13 +339,64 @@ func tryIota() {
 	)
 
 	// fmt.Printf("%v %v\n", KiB, YiB) // constant 1208925819614629174706176 overflows int
-	fmt.Println(YiB/ZiB)
+	fmt.Println(YiB / ZiB)
 	fmt.Printf("%d %d\n", Monday, Sunday)
 
 	var x float32 = math.Pi
 	var y float64 = math.Pi
 
 	fmt.Printf("%g %g\n", x, y)
+}
+
+func _tryPassArray(input [3]int) {
+	input[0] = 2000
+}
+func _tryPassArrayPointer(input *[3]int) {
+	(*input)[0] = 1000
+}
+
+func _tryPassSlice(input []int) {
+	if len(input) > 0 {
+		input[0] = 10000
+	}
+}
+
+func _tryPassSlicePointer(input *[]int) {
+	if len(*input) > 0 {
+		(*input)[0] = 20000
+	}
+}
+
+func tryPassArray() {
+	input := [...]int{1, 2, 3} // type is [3]int
+	_tryPassArray(input)
+	fmt.Printf("%T %[1]v.\n", input) // failed
+	_tryPassArrayPointer(&input)
+	fmt.Printf("%T %[1]v.\n", &input) // successful
+
+	inputSlice := []int{3, 2, 1} // type is []int, a slice
+	_tryPassSlice(inputSlice)
+	fmt.Printf("%T %[1]v.\n", inputSlice) // successful
+	_tryPassSlicePointer(&inputSlice)
+	fmt.Printf("%T %[1]v.\n", &inputSlice) // succesful
+
+	// Can modify the array through slice
+	inputSlice = input[0:]                // Create a slice base on input
+	fmt.Printf("%T %[1]v.\n", inputSlice) // successful
+	_tryPassSlice(inputSlice)
+	fmt.Printf("%T %[1]v.\n", inputSlice) // successful
+	fmt.Printf("%T %[1]v.\n", input)      // successful
+
+	// Why string => []byte array is OK, but not [3]int => [] int
+	b := []byte("x")
+	fmt.Printf("\"x\" is %T %[1]v, %T %[2]v.\n", "x", b)
+	// inputSlice = []int(input) // Can not convert input (type [3]int) to type []int
+
+	// [3]byte => []byte is not OK
+	c := [...]byte{1, 3, 4}
+	// b = []byte(c)
+	b = c[0:]
+	fmt.Printf("c is %T %[1]v, %T %[2]v.\n", c, b)
 }
 
 func main() {
@@ -363,4 +414,5 @@ func main() {
 	tryPointer()
 	tryString()
 	tryIota()
+	tryPassArray()
 }
