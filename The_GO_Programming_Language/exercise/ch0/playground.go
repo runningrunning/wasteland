@@ -399,6 +399,96 @@ func tryPassArray() {
 	fmt.Printf("c is %T %[1]v, %T %[2]v.\n", c, b)
 }
 
+type Employee struct {
+	ID     int
+	Salary int
+	team   int
+}
+
+var dilbert Employee
+
+func EmployeeByID(id int) *Employee {
+	return &dilbert
+}
+
+// func EmployeeByID(id int) Employee {
+// 	return dilbert
+// }
+
+func tryReturnType() {
+	EmployeeByID(0).Salary = 0
+}
+
+func NewEmployee(team int) Employee {
+	e := Employee{}
+	e.ID = 0
+	e.Salary = 500
+	e.team = team
+	return e
+}
+
+func tryStructCompare() {
+	a := NewEmployee(0)
+	b := NewEmployee(1)
+	fmt.Printf("a %v b %v == %v.\n", a, b, a == b)
+}
+
+func tryAnonymousFields() {
+	type Point struct {
+		X, Y int
+	}
+
+	type Circle struct {
+		Point
+		Radius int
+	}
+
+	type Wheel struct {
+		Circle
+		Spokes int
+	}
+
+	type Wrong struct {
+		Circle
+		*Point
+		Wheel
+		error int
+		X int
+	}
+
+	p := Point{X:1, Y: 2}
+
+	// cannot use promoted field Point.X in struct literal of type Circle
+	// cannot use promoted field Circle.Radius in struct literal of type Wheel
+	// cannot use promoted field Circle.Point.X in struct literal of type Wheel
+	// c := Circle{X:1, Radius: 10}
+	// w := Wheel{Radius: 20, X:10}
+	c := Circle{Radius: 100}
+	w := Wheel{Spokes: 20}
+
+	c.X = 100
+	w.Radius = 1000
+
+	fmt.Println(p, c, w)
+
+	fmt.Println(p)
+	r := Wrong{error:404}
+	// r.Point = &Point{1, 1}
+	r.Point = &p
+	r.X = 1000
+	r.Radius = 101
+	r.Y = 303
+	r.Circle.X = 50
+	fmt.Println(r.Point)
+	fmt.Println(r)
+
+	q := Wrong{Circle{Point{8, 8}, 10},
+		&Point{10, 10}, Wheel{Spokes:5,Circle:Circle{Point{4, 4}, 7},},
+		8, 100}
+	fmt.Println(q, q.X, q.Y)
+	fmt.Printf("%#v\n%#v\n", r, q)
+}
+
 func main() {
 	tryRune()
 	tryNumber()
@@ -415,4 +505,7 @@ func main() {
 	tryString()
 	tryIota()
 	tryPassArray()
+	tryReturnType()
+	tryStructCompare()
+	tryAnonymousFields()
 }
