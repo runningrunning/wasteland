@@ -422,11 +422,9 @@ int b_search_2(int* nums, int size, int target)
 {
     int s = 0;
     int e = size - 1;
-
     while(s <= e)
     {
         int m = s + (e - s) / 2;
-
         if (nums[m] == target)
             return m;
         if (nums[m] > target)
