@@ -8,10 +8,14 @@ import (
 	"time"
 )
 
+func out(item *github.Issue) {
+	fmt.Printf("#%-5d %9.9s %.30v %.55s\n",
+		item.Number, item.User.Login, item.CreatedAt, item.Title)
+}
+
 func outNormal(result *github.IssuesSearchResult) {
 	for _, item := range result.Items {
-		fmt.Printf("#%-5d %9.9s %.55s\n",
-			item.Number, item.User.Login, item.Title)
+		out(item)
 	}
 }
 
@@ -50,8 +54,7 @@ func outByAge(result *github.IssuesSearchResult) {
 		}
 
 		for _, item := range items {
-			fmt.Printf("#%-5d %9.9s %.30v %.55s\n",
-				item.Number, item.User.Login, item.CreatedAt, item.Title)
+			out(item)
 		}
 	}
 }
@@ -61,7 +64,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%d issues:\n", result.TotalCount)
+	// fmt.Printf("%d issues:\n", result.TotalCount)
 	// outNormal(result)
-	outByAge(result)
+	// outByAge(result)
+	// github.Report(result)
+	github.HTMLReport(result)
 }
