@@ -60,7 +60,7 @@ func outByAge(result *github.IssuesSearchResult) {
 }
 
 func main() {
-	result, err := github.SearchIssues(os.Args[1:])
+	result, err := github.SearchIssues(os.Args[1:], nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,5 +68,5 @@ func main() {
 	// outNormal(result)
 	// outByAge(result)
 	// github.Report(result)
-	github.HTMLReport(result)
+	github.HTMLReport(result, os.Stdout)
 }

@@ -15,13 +15,13 @@ func ParseForm(r *http.Request, x interface{}) error {
 		return err
 	}
 
-	var form = map[string]string{}
+	form := map[string]string{}
 	for k, _ := range r.Form {
 		form[k] = r.FormValue(k)
 	}
 
 	if err := utils.SetStruct(form, x); err != nil {
-		return err
+ return err
 	}
 
 	return nil

@@ -9,9 +9,18 @@ import (
 )
 
 // SearchIssues queries the GitHub issues tracker.
-func SearchIssues(terms []string) (*IssuesSearchResult, error) {
+// others are non query parameters in https://docs.github.com/en/rest/reference/search
+func SearchIssues(terms, others []string) (*IssuesSearchResult, error) {
 	q := url.QueryEscape(strings.Join(terms, " "))
-	resp, err := http.Get(IssuesURL + "?q=" + q)
+	o := strings.Join(others, "&")
+
+	if o != "" {
+		o = "&" + o
+	}
+
+	// fmt.Println("Issue url is ", IssuesURL + "?q=" + q + o)
+
+	resp, err := http.Get(IssuesURL + "?q=" + q + o)
 	if err != nil {
 		return nil, err
 	}

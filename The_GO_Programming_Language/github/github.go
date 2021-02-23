@@ -1,6 +1,9 @@
 package github
 
-import "time"
+import (
+	"html/template"
+	"time"
+)
 
 const IssuesURL = "https://api.github.com/search/issues"
 
@@ -11,7 +14,7 @@ type IssuesSearchResult struct {
 
 type Issue struct {
 	Number    int
-	HTMLURL   string `json:"html_url"`
+	HTMLURL   template.HTML `json:"html_url"`
 	Title     string
 	State     string
 	User      *User
@@ -21,5 +24,5 @@ type Issue struct {
 
 type User struct {
 	Login   string
-	HTMLURL string `json:"html_url"`
+	HTMLURL template.HTML `json:"html_url"`
 }

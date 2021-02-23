@@ -3,6 +3,7 @@ package github
 import (
 	htemplate "html/template"
 	"log"
+	"io"
 	"os"
 	"text/template"
 	"time"
@@ -52,8 +53,8 @@ var issueList = htemplate.Must(htemplate.New("issuelist").Parse(`
 </table>
 `))
 
-func HTMLReport(result *IssuesSearchResult) {
-	if err := issueList.Execute(os.Stdout, result); err != nil {
+func HTMLReport(result *IssuesSearchResult, out io.Writer) {
+	if err := issueList.Execute(out, result); err != nil {
 		log.Fatal(err)
 	}
 }
